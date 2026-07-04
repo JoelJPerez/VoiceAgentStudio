@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/VoiceAgentStudio.API/VoiceAgentStudio.API.csproj" Id="723324d8-e4fe-415d-84ac-83396f916252" />
+  <Project Path="src/VoiceAgentStudio.Application/VoiceAgentStudio.Application.csproj" Id="00c11b47-9985-4f67-bc0e-46e2bdb6e8e9" />
+  <Project Path="src/VoiceAgentStudio.Domain/VoiceAgentStudio.Domain.csproj" Id="9882a361-53a6-4e07-9048-f232a0ee0237" />
+  <Project Path="src/VoiceAgentStudio.Infrastructure/VoiceAgentStudio.Infrastructure.csproj" Id="03be3178-4d37-418a-9825-284d437e28f8" />
+</Solution>
