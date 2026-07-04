@@ -361,3 +361,29 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ── .NET ──────────────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.log
+appsettings.Development.json
+
+# !! IMPORTANTE: nunca subas keys reales
+# Usa appsettings.Development.json para secrets locales
+# y GitHub Secrets para CI/CD
+
+# ── Angular / Node ─────────────────────────────────────
+node_modules/
+dist/
+.angular/
+*.env
+
+# ── Docker ─────────────────────────────────────────────
+.dockerignore
+
+# ── OS ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
