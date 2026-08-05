@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VoiceAgentStudio.Application.Common.Interfaces;
+using VoiceAgentStudio.Infrastructure.AI;
 using VoiceAgentStudio.Infrastructure.Persistence;
 using VoiceAgentStudio.Infrastructure.Services;
 
@@ -30,6 +31,24 @@ public static class DependencyInjection
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
+
+        // ── AI Providers ──────────────────────────────────────────────
+        // Named HttpClients — one per provider for isolated config/timeouts
+        services.AddHttpClient("Gemini", client =>
+        {
+            client.Timeout = TimeSpan.FromMinutes(3);
+        });
+        services.AddHttpClient("OpenAI", client =>
+        {
+            client.Timeout = TimeSpan.FromMinutes(3);
+        });
+
+        // Providers registered as Transient (stateless HTTP clients)
+        services.AddTransient<GeminiProvider>();
+        services.AddTransient<OpenAiProvider>();
+
+        // Factory registered as Singleton (holds no state, resolves from DI)
+        services.AddSingleton<IAiProviderFactory, AiProviderFactory>();
 
         return services;
     }

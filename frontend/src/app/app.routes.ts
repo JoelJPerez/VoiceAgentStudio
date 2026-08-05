@@ -41,6 +41,11 @@ export const routes: Routes = [
         path: ':id/edit',
         loadComponent: () =>
           import('./features/agents/agent-form/agent-form.component').then(m => m.AgentFormComponent)
+      },
+      {
+        path: ':agentId/chat',
+        loadComponent: () =>
+          import('./features/chat/chat-simulator/chat-simulator.component').then(m => m.ChatSimulatorComponent)
       }
     ]
   },

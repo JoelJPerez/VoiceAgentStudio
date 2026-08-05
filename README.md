@@ -131,7 +131,7 @@ VoiceAgentStudio/
 ## Sprints
 
 - [x] **Sprint 1** — Fundamentos: Auth JWT, CRUD Agentes, Angular Material UI
-- [ ] **Sprint 2** — Chat Simulator con IA real (OpenAI streaming + SignalR)
+- [x] **Sprint 2** — Chat Simulator con IA real (OpenAI streaming + SignalR)
 - [ ] **Sprint 3** — Campañas masivas, importar contactos CSV, monitor en vivo
 - [ ] **Sprint 4** — Analytics dashboard, reportes, Docker deploy
 

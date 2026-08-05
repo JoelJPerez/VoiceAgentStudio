@@ -108,10 +108,11 @@ import { MatDividerModule } from '@angular/material/divider';
             <a mat-button color="primary" [routerLink]="['/agents', agent.id, 'edit']">
               <mat-icon>edit</mat-icon> Editar
             </a>
-            <!-- Sprint 2: Chat Simulator will go here -->
-            <button mat-button color="accent" matTooltip="Disponible en Sprint 2" disabled>
+            <a mat-button color="accent" [routerLink]="['/agents', agent.id, 'chat']"
+              [class.disabled-btn]="agent.status !== 'Active'"
+              [matTooltip]="agent.status !== 'Active' ? 'Activa el agente para simular' : 'Abrir simulador de chat'">
               <mat-icon>chat</mat-icon> Simular
-            </button>
+            </a>
           </mat-card-actions>
         </mat-card>
       }

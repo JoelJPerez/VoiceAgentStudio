@@ -58,9 +58,15 @@ builder.Services.AddCors(options =>
               .AllowCredentials());
 });
 
+// ── SignalR ───────────────────────────────────────────────────────────
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.MaximumReceiveMessageSize = 64 * 1024; // 64 KB
+});
+
 // ── Controllers ───────────────────────────────────────────────────────
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 // ── Swagger with JWT support ──────────────────────────────────────────
@@ -116,7 +122,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "VoiceAgent Studio v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "VoiceAgent Studio v2");
         c.RoutePrefix = string.Empty; // Swagger at root
     });
 }
@@ -129,5 +135,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// ── SignalR Hubs ──────────────────────────────────────────────────────
+app.MapHub<VoiceAgentStudio.API.Hubs.ChatHub>("/hubs/chat");
 
 app.Run();
