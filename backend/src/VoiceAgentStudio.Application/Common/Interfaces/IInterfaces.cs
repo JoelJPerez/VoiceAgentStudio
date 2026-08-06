@@ -24,11 +24,39 @@ public interface IUserRepository : IRepository<User>
     Task<User?> GetByEmailAsync(string email, CancellationToken ct = default);
 }
 
+public interface ICampaignRepository : IRepository<Campaign>
+{
+    Task<IEnumerable<Campaign>> GetByUserIdAsync(Guid userId, CancellationToken ct = default);
+    Task<Campaign?> GetWithDetailsAsync(Guid id, CancellationToken ct = default);
+}
+
+public interface IContactRepository : IRepository<Contact>
+{
+    Task<IEnumerable<Contact>> GetByCampaignIdAsync(Guid campaignId, CancellationToken ct = default);
+    Task AddRangeAsync(IEnumerable<Contact> contacts, CancellationToken ct = default);
+}
+
+public interface ISessionRepository : IRepository<Session>
+{
+    Task<IEnumerable<Session>> GetByCampaignIdAsync(Guid campaignId, CancellationToken ct = default);
+    Task<Session?> GetWithMessagesAsync(Guid id, CancellationToken ct = default);
+    Task<IEnumerable<Session>> GetPendingAsync(Guid campaignId, CancellationToken ct = default);
+}
+
+public interface IMessageRepository : IRepository<Message>
+{
+    Task AddRangeAsync(IEnumerable<Message> messages, CancellationToken ct = default);
+}
+
 // ── Unit of Work ─────────────────────────────────────────────────────
 public interface IUnitOfWork
 {
     IAgentRepository Agents { get; }
     IUserRepository Users { get; }
+    ICampaignRepository Campaigns { get; }
+    IContactRepository Contacts { get; }
+    ISessionRepository Sessions { get; }
+    IMessageRepository Messages { get; }
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }
 
@@ -52,5 +80,26 @@ public interface ICurrentUserService
     string? Email { get; }
     string? Role { get; }
     bool IsAuthenticated { get; }
+}
+
+// ── CSV parsing ───────────────────────────────────────────────────────
+public interface ICsvContactParser
+{
+    IEnumerable<ParsedContact> Parse(Stream csvStream);
+}
+
+public class ParsedContact
+{
+    public string FullName { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string CustomContext { get; set; } = string.Empty;
+    public bool IsValid => !string.IsNullOrWhiteSpace(FullName);
+}
+
+// ── Campaign execution queue ──────────────────────────────────────────
+public interface ICampaignExecutionQueue
+{
+    void Enqueue(Guid campaignId);
 }
 
