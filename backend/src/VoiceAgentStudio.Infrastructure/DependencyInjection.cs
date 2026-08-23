@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VoiceAgentStudio.Application.Common.Interfaces;
 using VoiceAgentStudio.Infrastructure.AI;
+using VoiceAgentStudio.Infrastructure.Campaigns;
 using VoiceAgentStudio.Infrastructure.Persistence;
 using VoiceAgentStudio.Infrastructure.Services;
 
@@ -24,31 +25,31 @@ public static class DependencyInjection
         // ── Repositories ─────────────────────────────────────────────
         services.AddScoped<IAgentRepository, AgentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICampaignRepository, CampaignRepository>();
+        services.AddScoped<IContactRepository, ContactRepository>();
+        services.AddScoped<ISessionRepository, SessionRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // ── Services ─────────────────────────────────────────────────
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<ICsvContactParser, CsvContactParser>();
         services.AddHttpContextAccessor();
 
         // ── AI Providers ──────────────────────────────────────────────
-        // Named HttpClients — one per provider for isolated config/timeouts
-        services.AddHttpClient("Gemini", client =>
-        {
-            client.Timeout = TimeSpan.FromMinutes(3);
-        });
-        services.AddHttpClient("OpenAI", client =>
-        {
-            client.Timeout = TimeSpan.FromMinutes(3);
-        });
-
-        // Providers registered as Transient (stateless HTTP clients)
+        services.AddHttpClient("Gemini", client => client.Timeout = TimeSpan.FromMinutes(3));
+        services.AddHttpClient("OpenAI", client => client.Timeout = TimeSpan.FromMinutes(3));
         services.AddTransient<GeminiProvider>();
         services.AddTransient<OpenAiProvider>();
-
-        // Factory registered as Singleton (holds no state, resolves from DI)
         services.AddSingleton<IAiProviderFactory, AiProviderFactory>();
+
+        // ── Campaign execution (background service + queue) ───────────
+        services.AddSingleton<CampaignExecutionQueue>();
+        services.AddSingleton<ICampaignExecutionQueue>(sp =>
+            sp.GetRequiredService<CampaignExecutionQueue>());
+        services.AddHostedService<CampaignExecutionService>();
 
         return services;
     }

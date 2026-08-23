@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using VoiceAgentStudio.Application.Agents;
 using VoiceAgentStudio.Application.Auth;
+using VoiceAgentStudio.Application.Campaigns;
 using VoiceAgentStudio.Application.Chat;
 
 namespace VoiceAgentStudio.Application;
@@ -11,6 +12,7 @@ public static class DependencyInjection
         services.AddScoped<IAgentService, AgentService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAiOrchestrator, AiOrchestrator>();
+        services.AddScoped<ICampaignService, Campaigns.CampaignService>();
         return services;
     }
 }

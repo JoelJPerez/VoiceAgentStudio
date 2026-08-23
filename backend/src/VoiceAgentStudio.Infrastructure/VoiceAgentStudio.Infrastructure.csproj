@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VoiceAgentStudio.Application\VoiceAgentStudio.Application.csproj" />
+	<ProjectReference Include="..\VoiceAgentStudio.Domain\VoiceAgentStudio.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
