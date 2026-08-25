@@ -50,6 +50,29 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'campaigns',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/campaigns/campaign-list/campaign-list.component').then(m => m.CampaignListComponent)
+      },
+      {
+        path: ':id/monitor',
+        loadComponent: () =>
+          import('./features/campaigns/campaign-monitor/campaign-monitor.component').then(m => m.CampaignMonitorComponent)
+      }
+    ]
+  },
+  {
+    path: 'analytics',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/analytics/analytics-dashboard/analytics-dashboard.component')
+        .then(m => m.AnalyticsDashboardComponent)
+  },
+  {
     path: '**',
     redirectTo: 'agents'
   }

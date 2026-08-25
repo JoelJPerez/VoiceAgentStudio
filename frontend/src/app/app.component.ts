@@ -29,6 +29,12 @@ import { MatDividerModule } from '@angular/material/divider';
           <a mat-button routerLink="/agents" routerLinkActive="active-link">
             <mat-icon>groups</mat-icon> Agentes
           </a>
+          <a mat-button routerLink="/campaigns" routerLinkActive="active-link">
+            <mat-icon>campaign</mat-icon> Campañas
+          </a>
+          <a mat-button routerLink="/analytics" routerLinkActive="active-link">
+            <mat-icon>insights</mat-icon> Analytics
+          </a>
         </nav>
 
         <span class="spacer"></span>
