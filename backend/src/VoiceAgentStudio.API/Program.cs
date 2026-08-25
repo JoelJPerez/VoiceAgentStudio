@@ -8,6 +8,7 @@ using VoiceAgentStudio.Application;
 using VoiceAgentStudio.Application.Common.Interfaces;
 using VoiceAgentStudio.Infrastructure;
 using VoiceAgentStudio.Infrastructure.Persistence;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,7 +69,14 @@ builder.Services.AddSignalR(options =>
 });
 
 // ── Controllers ───────────────────────────────────────────────────────
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IRealtimeNotifier, CampaignMonitorNotifier>();
 

@@ -17,7 +17,8 @@ public enum AgentTone
 public enum LlmProvider
 {
     OpenAI = 1,
-    Anthropic = 2
+    Anthropic = 2,
+    Gemini = 3
 }
 
 public enum SessionStatus

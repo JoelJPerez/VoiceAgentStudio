@@ -88,7 +88,7 @@ import { Agent, AgentStatus } from '../../../core/models/models';
               </div>
 
               <div class="step-actions">
-                <button mat-raised-button color="primary" matStepperNext
+                <button type="button" mat-raised-button color="primary" matStepperNext
                   [disabled]="basicInfoGroup.invalid">
                   Siguiente <mat-icon>arrow_forward</mat-icon>
                 </button>
@@ -105,6 +105,7 @@ import { Agent, AgentStatus } from '../../../core/models/models';
                   <mat-select formControlName="llmProvider">
                     <mat-option value="OpenAI">OpenAI</mat-option>
                     <mat-option value="Anthropic">Anthropic (Claude)</mat-option>
+                    <mat-option value="Gemini">Google Gemini</mat-option>
                   </mat-select>
                 </mat-form-field>
 
@@ -115,9 +116,13 @@ import { Agent, AgentStatus } from '../../../core/models/models';
                       <mat-option value="gpt-4o">GPT-4o</mat-option>
                       <mat-option value="gpt-4o-mini">GPT-4o Mini</mat-option>
                       <mat-option value="gpt-4-turbo">GPT-4 Turbo</mat-option>
-                    } @else {
+                    } @else if (llmConfigGroup.get('llmProvider')?.value === 'Anthropic') {
                       <mat-option value="claude-sonnet-4-6">Claude Sonnet 4.6</mat-option>
                       <mat-option value="claude-haiku-4-5">Claude Haiku 4.5</mat-option>
+                    } @else {
+                      <mat-option value="gemini-2.0-flash">Gemini 2.0 Flash (gratis)</mat-option>
+                      <mat-option value="gemini-1.5-flash">Gemini 1.5 Flash</mat-option>
+                      <mat-option value="gemini-1.5-pro">Gemini 1.5 Pro</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
@@ -148,8 +153,8 @@ import { Agent, AgentStatus } from '../../../core/models/models';
               </div>
 
               <div class="step-actions">
-                <button mat-button matStepperPrevious>Anterior</button>
-                <button mat-raised-button color="primary" matStepperNext>
+                <button type="button" mat-button matStepperPrevious>Anterior</button>
+                <button type="button" mat-raised-button color="primary" matStepperNext>
                   Siguiente <mat-icon>arrow_forward</mat-icon>
                 </button>
               </div>
@@ -209,7 +214,7 @@ import { Agent, AgentStatus } from '../../../core/models/models';
 
               <div class="step-actions">
                 <button mat-button matStepperPrevious>Anterior</button>
-                <button mat-raised-button color="primary" matStepperNext
+                <button type="button" mat-raised-button color="primary" matStepperNext
                   [disabled]="promptGroup.invalid">
                   Revisar y guardar <mat-icon>arrow_forward</mat-icon>
                 </button>
@@ -245,7 +250,7 @@ import { Agent, AgentStatus } from '../../../core/models/models';
               </div>
 
               <div class="step-actions">
-                <button mat-button matStepperPrevious>Anterior</button>
+                <button type="button" mat-button matStepperPrevious>Anterior</button>
                 <button mat-raised-button color="primary" type="submit"
                   [disabled]="saving() || form.invalid">
                   @if (saving()) {
@@ -334,6 +339,16 @@ export class AgentFormComponent implements OnInit {
       this.isEditMode.set(true);
       this.loadAgent(this.agentId);
     }
+
+    // Auto-seleccionar modelo por defecto al cambiar proveedor
+    this.llmConfigGroup.get('llmProvider')?.valueChanges.subscribe(provider => {
+      const defaults: Record<string, string> = {
+        OpenAI:    'gpt-4o',
+        Anthropic: 'claude-sonnet-4-6',
+        Gemini:    'gemini-2.0-flash'
+      };
+      this.llmConfigGroup.get('modelName')?.setValue(defaults[provider ?? 'Gemini']);
+    });
   }
 
   private loadAgent(id: string): void {
