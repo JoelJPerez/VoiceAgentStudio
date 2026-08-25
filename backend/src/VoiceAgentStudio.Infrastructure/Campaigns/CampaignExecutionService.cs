@@ -1,5 +1,5 @@
 ﻿using System.Threading.Channels;
-using Microsoft.AspNetCore.SignalR;
+//using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -74,7 +74,7 @@ public class CampaignExecutionService : BackgroundService
         using var scope = _services.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var orchestrator = scope.ServiceProvider.GetRequiredService<IAiOrchestrator>();
-        var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<API.Hubs.CampaignMonitorHub>>();
+        var notifier = scope.ServiceProvider.GetRequiredService<IRealtimeNotifier>();
 
         while (!ct.IsCancellationRequested)
         {
@@ -93,19 +93,18 @@ public class CampaignExecutionService : BackgroundService
                 campaign.UpdatedAt = DateTime.UtcNow;
                 await uow.Campaigns.UpdateAsync(campaign, ct);
                 await uow.SaveChangesAsync(ct);
-
-                await hubContext.Clients.Group(campaignId.ToString())
-                    .SendAsync(MonitorHubEvents.CampaignCompleted, new
-                    {
-                        campaignId,
-                        completedAt = campaign.CompletedAt
-                    }, ct);
+                
+                await notifier.NotifyCampaignCompletedAsync(new
+                {
+                    campaignId,
+                    completedAt = campaign.CompletedAt
+                }, campaignId, ct);
                 break;
             }
 
             // Process one session at a time
             var session = pending.First();
-            await ProcessSessionAsync(session, campaign.Agent!, uow, orchestrator, hubContext, ct);
+            await ProcessSessionAsync(session, campaign.Agent!, uow, orchestrator, notifier, ct);
 
             await Task.Delay(SessionDelay, ct);
         }
@@ -116,7 +115,7 @@ public class CampaignExecutionService : BackgroundService
         Agent agent,
         IUnitOfWork uow,
         IAiOrchestrator orchestrator,
-        IHubContext<API.Hubs.CampaignMonitorHub> hubContext,
+        IRealtimeNotifier notifier,
         CancellationToken ct)
     {
         // Load contact for personalization
@@ -128,7 +127,7 @@ public class CampaignExecutionService : BackgroundService
         session.StartedAt = DateTime.UtcNow;
         await uow.Sessions.UpdateAsync(session, ct);
         await uow.SaveChangesAsync(ct);
-        await BroadcastSessionUpdate(hubContext, session, contact, ct);
+        await BroadcastSessionUpdate(notifier, session, contact, ct);
 
         var conversationHistory = new List<ChatMessageDto>();
         var messagesToSave = new List<Message>();
@@ -192,7 +191,7 @@ public class CampaignExecutionService : BackgroundService
         await uow.Sessions.UpdateAsync(session, ct);
         await uow.SaveChangesAsync(ct);
 
-        await BroadcastSessionUpdate(hubContext, session, contact, ct);
+        await BroadcastSessionUpdate(notifier, session, contact, ct);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────
@@ -235,24 +234,44 @@ public class CampaignExecutionService : BackgroundService
         return IntentionType.Interested;
     }
 
+    //private static async Task BroadcastSessionUpdate(
+    //    IHubContext<API.Hubs.CampaignMonitorHub> hub,
+    //    Session session,
+    //    Contact contact,
+    //    CancellationToken ct)
+    //{
+    //    await hub.Clients.Group(session.CampaignId.ToString())
+    //        .SendAsync(MonitorHubEvents.SessionUpdated, new
+    //        {
+    //            id = session.Id,
+    //            contactName = contact.FullName,
+    //            phoneNumber = contact.PhoneNumber,
+    //            status = session.Status.ToString(),
+    //            detectedIntention = session.DetectedIntention.ToString(),
+    //            messageCount = session.MessageCount,
+    //            wasEscalated = session.WasEscalated,
+    //            startedAt = session.StartedAt,
+    //            endedAt = session.EndedAt
+    //        }, ct);
+    //}
+
     private static async Task BroadcastSessionUpdate(
-        IHubContext<API.Hubs.CampaignMonitorHub> hub,
-        Session session,
-        Contact contact,
-        CancellationToken ct)
+    IRealtimeNotifier notifier,
+    Session session,
+    Contact contact,
+    CancellationToken ct)
     {
-        await hub.Clients.Group(session.CampaignId.ToString())
-            .SendAsync(MonitorHubEvents.SessionUpdated, new
-            {
-                id = session.Id,
-                contactName = contact.FullName,
-                phoneNumber = contact.PhoneNumber,
-                status = session.Status.ToString(),
-                detectedIntention = session.DetectedIntention.ToString(),
-                messageCount = session.MessageCount,
-                wasEscalated = session.WasEscalated,
-                startedAt = session.StartedAt,
-                endedAt = session.EndedAt
-            }, ct);
+        await notifier.NotifySessionUpdatedAsync(new
+        {
+            id = session.Id,
+            contactName = contact.FullName,
+            phoneNumber = contact.PhoneNumber,
+            status = session.Status.ToString(),
+            detectedIntention = session.DetectedIntention.ToString(),
+            messageCount = session.MessageCount,
+            wasEscalated = session.WasEscalated,
+            startedAt = session.StartedAt,
+            endedAt = session.EndedAt
+        }, session.CampaignId, ct);
     }
 }

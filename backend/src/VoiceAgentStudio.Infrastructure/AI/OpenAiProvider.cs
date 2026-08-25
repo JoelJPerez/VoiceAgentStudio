@@ -64,7 +64,7 @@ public class OpenAiProvider : IAiProvider
             var line = await reader.ReadLineAsync(ct);
             if (line is null || !line.StartsWith("data: ")) continue;
 
-            var json = line["data: "..].Trim();
+            var json = line["data: ".Length..].Trim();
             if (json == "[DONE]") break;
 
             var token = ExtractTextToken(json);

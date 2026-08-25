@@ -103,3 +103,9 @@ public interface ICampaignExecutionQueue
     void Enqueue(Guid campaignId);
 }
 
+public interface IRealtimeNotifier
+{
+    Task NotifySessionUpdatedAsync(object payload, Guid campaignId, CancellationToken ct = default);
+    Task NotifyCampaignCompletedAsync(object payload, Guid campaignId, CancellationToken ct = default);
+}
+

@@ -1,9 +1,11 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using VoiceAgentStudio.API.Hubs;
 using VoiceAgentStudio.API.Middleware;
 using VoiceAgentStudio.Application;
+using VoiceAgentStudio.Application.Common.Interfaces;
 using VoiceAgentStudio.Infrastructure;
 using VoiceAgentStudio.Infrastructure.Persistence;
 
@@ -68,6 +70,7 @@ builder.Services.AddSignalR(options =>
 // ── Controllers ───────────────────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<IRealtimeNotifier, CampaignMonitorNotifier>();
 
 // ── Swagger with JWT support ──────────────────────────────────────────
 builder.Services.AddSwaggerGen(c =>

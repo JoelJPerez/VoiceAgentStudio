@@ -88,21 +88,21 @@ public class UserRepository : Repository<User>, IUserRepository
 
 // ── Unit of Work ─────────────────────────────────────────────────────
 
-public class UnitOfWork : IUnitOfWork
-{
-    private readonly AppDbContext _context;
+//public class UnitOfWork : IUnitOfWork
+//{
+//    private readonly AppDbContext _context;
 
-    public IAgentRepository Agents { get; }
-    public IUserRepository Users { get; }
+//    public IAgentRepository Agents { get; }
+//    public IUserRepository Users { get; }
 
-    public UnitOfWork(AppDbContext context, IAgentRepository agents, IUserRepository users)
-    {
-        _context = context;
-        Agents = agents;
-        Users = users;
-    }
+//    public UnitOfWork(AppDbContext context, IAgentRepository agents, IUserRepository users)
+//    {
+//        _context = context;
+//        Agents = agents;
+//        Users = users;
+//    }
 
-    public async Task<int> SaveChangesAsync(CancellationToken ct = default)
-        => await _context.SaveChangesAsync(ct);
-}
+//    public async Task<int> SaveChangesAsync(CancellationToken ct = default)
+//        => await _context.SaveChangesAsync(ct);
+//}
 

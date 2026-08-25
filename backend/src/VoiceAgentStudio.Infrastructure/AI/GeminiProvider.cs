@@ -71,7 +71,7 @@ public class GeminiProvider : IAiProvider
             // SSE lines start with "data: "
             if (!line.StartsWith("data: ")) continue;
 
-            var json = line["data: "..].Trim();
+            var json = line["data: ".Length..].Trim();
             if (string.IsNullOrEmpty(json)) continue;
 
             var token = ExtractTextToken(json);
