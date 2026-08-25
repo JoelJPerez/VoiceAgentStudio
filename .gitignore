@@ -429,3 +429,4 @@ testem.log
 Thumbs.db
 
 src/environments/
+*.example

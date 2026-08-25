@@ -1,7 +1,9 @@
 # VoiceAgent Studio
 
 > Plataforma de agentes de IA conversacionales para campañas masivas.
-> Proyecto de portafolio — .NET 8 + Angular 17 + OpenAI GPT-4o.
+> Proyecto de portafolio — .NET 8 + Angular 17 + Google Gemini + SignalR.
+
+[![CI/CD](https://github.com/TU_USUARIO/VoiceAgentStudio/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/TU_USUARIO/VoiceAgentStudio/actions)
 
 ---
 
@@ -9,12 +11,12 @@
 
 | Capa | Tecnología |
 |---|---|
-| Frontend | Angular 17 (standalone), Angular Material, RxJS, Signals |
+| Frontend | Angular 17 (standalone), Angular Material, RxJS, Signals, Chart.js, SignalR client |
 | Backend | .NET 8, ASP.NET Core, Clean Architecture |
 | Base de datos | SQL Server 2022, Entity Framework Core 8 |
+| IA | Google Gemini 2.0 Flash — interfaz proveedor-agnóstica |
 | Auth | JWT Bearer Tokens |
-| IA (Sprint 2) | OpenAI GPT-4o / Claude — streaming via SignalR |
-| Infra | Docker, Docker Compose, nginx |
+| Infra | Docker, Docker Compose, nginx, GitHub Actions CI/CD |
 
 ---
 
@@ -25,9 +27,9 @@
 git clone https://github.com/tu-usuario/voiceagent-studio.git
 cd voiceagent-studio
 
-# 2. Configurar API key de OpenAI
+# 2. Configurar API key de GEMINI
 cp .env.example .env
-# Edita .env y agrega tu OPENAI_API_KEY
+# Edita .env y agrega tu GEMINI_API_KEY
 
 # 3. Levantar todo
 docker-compose up --build
@@ -76,12 +78,22 @@ dotnet ef migrations add InitialCreate \
 cd frontend
 
 # Instalar dependencias
-npm install
+npm install && npm install chart.js @microsoft/signalr
 
 # Correr en modo desarrollo
 ng serve
 # App → http://localhost:4200
 ```
+
+## CI/CD — GitHub Actions
+
+Push a `main` → build backend + frontend → push Docker images a GitHub Container Registry.
+
+**Secrets necesarios en el repo:**
+
+| Secret | Valor |
+|---|---|
+| `GEMINI_API_KEY` | Tu key de Google AI Studio |
 
 ---
 
@@ -133,7 +145,7 @@ VoiceAgentStudio/
 - [x] **Sprint 1** — Fundamentos: Auth JWT, CRUD Agentes, Angular Material UI
 - [x] **Sprint 2** — Chat Simulator con IA real (OpenAI streaming + SignalR)
 - [x] **Sprint 3** — Campañas masivas, importar contactos CSV, monitor en vivo
-- [ ] **Sprint 4** — Analytics dashboard, reportes, Docker deploy
+- [x] **Sprint 4** — Analytics dashboard, reportes, Docker deploy
 
 ---
 
